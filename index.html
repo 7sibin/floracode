@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flora&middot;Code &mdash; Studio &middot; Belgrade</title>
+
+    <!-- =========================================================
+         FONTS — Playfair Display + JetBrains Mono
+         ========================================================= -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- =========================================================
+         GSAP + ScrollTrigger (CDN)
+         ========================================================= -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* =========================================================
+           BRAND TOKENS
+           ========================================================= */
+        :root {
+            --bg:          #2d3f52;
+            --bg-blur:     rgba(45, 63, 82, 0.85);
+            --cream:       #f5f0e0;
+            --gray:        #8a9bb0;
+            --orange:      #e8622a;
+            --yellow:      #f5c842;
+            --purple:      #6b3fa0;
+            --pink:        #e8407a;
+
+            --font-serif:  'Playfair Display', 'Times New Roman', serif;
+            --font-mono:   'JetBrains Mono', 'Courier New', monospace;
+
+            --nav-h:       72px;
+        }
+
+        /* =========================================================
+           RESET & BASE
+           ========================================================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: auto; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--cream);
+            font-family: var(--font-serif);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        body, a, button { cursor: none; }
+        a   { color: inherit; text-decoration: none; }
+        ul  { list-style: none; }
+        img { display: block; max-width: 100%; }
+        button {
+            background: none; border: none; color: inherit;
+            font: inherit; padding: 0;
+        }
+
+        /* =========================================================
+           CUSTOM CURSOR
+           ========================================================= */
+        .cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 16px; height: 16px;
+            border: 1.5px solid var(--orange);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            will-change: transform;
+        }
+
+        /* =========================================================
+           CORNER MARK — // hello.world
+           ========================================================= */
+        .corner-mark {
+            position: fixed;
+            top: 28px; left: 32px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 0.02em;
+            color: var(--gray);
+            z-index: 50;
+            user-select: none;
+        }
+
+        /* =========================================================
+           LOADER
+           ========================================================= */
+        .loader {
+            position: fixed;
+            inset: 0;
+            background-color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .loader__flower {
+            width: 140px; height: 140px;
+            opacity: 0;
+            transform: scale(0.3);
+            will-change: transform, opacity;
+        }
+
+        /* =========================================================
+           NAVBAR
+           ========================================================= */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 22px 40px;
+            opacity: 0;
+            transition:
+                background-color 0.4s ease,
+                backdrop-filter  0.4s ease,
+                padding          0.4s ease;
+        }
+
+        .navbar.is-scrolled {
+            background-color: var(--bg-blur);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 14px 40px;
+        }
+
+        .navbar__inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .navbar__brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 500;
+            font-size: 18px;
+            color: var(--cream);
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+        .navbar__brand .dot { color: var(--orange); }
+
+        .navbar__flower {
+            width: 28px; height: 28px;
+            opacity: 0;
+            will-change: opacity, transform;
+        }
+
+        .navbar__links {
+            display: flex;
+            align-items: center;
+            gap: 36px;
+        }
+        .navbar__links a {
+            position: relative;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gray);
+            transition: color 0.3s ease;
+        }
+        .navbar__links a:hover { color: var(--orange); }
+        .navbar__links a::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: -6px;
+            width: 100%; height: 1px;
+            background: var(--orange);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.7, 0, 0.2, 1);
+        }
+        .navbar__links a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .navbar__burger {
+            display: none;
+            position: relative;
+            width: 28px; height: 22px;
+            z-index: 110;
+        }
+        .navbar__burger span {
+            position: absolute;
+            left: 0;
+            width: 100%; height: 1.5px;
+            background: var(--cream);
+            transition:
+                transform 0.4s cubic-bezier(0.7, 0, 0.2, 1),
+                top       0.4s cubic-bezier(0.7, 0, 0.2, 1);
+        }
+        .navbar__burger span:nth-child(1) { top: 6px; }
+        .navbar__burger span:nth-child(2) { top: 14px; }
+        .navbar__burger.is-open span:nth-child(1) { top: 10px; transform: rotate(45deg);  }
+        .navbar__burger.is-open span:nth-child(2) { top: 10px; transform: rotate(-45deg); }
+
+        /* =========================================================
+           MOBILE MENU
+           ========================================================= */
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            z-index: 105;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        .mobile-menu.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .mobile-menu__flower {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70vw;
+            max-width: 460px;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+        .mobile-menu__list {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            text-align: center;
+        }
+        .mobile-menu__list a {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--cream);
+            transition: color 0.3s ease;
+        }
+        .mobile-menu__list a:hover { color: var(--orange); }
+
+        /* =========================================================
+           STAGE — ScrollTrigger pin: hero exit + about reveal
+                   + explosion → services. End: '+=300%'.
+           ========================================================= */
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* =========================================================
+           HERO
+           ========================================================= */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;          /* push text to bottom */
+            padding: 0 24px 16vh;               /* leave room above text */
+            opacity: 0;
+        }
+
+        /* Cvet je sada apsolutno centriran u hero-u — uvek na (50%, 50%)
+           bez obzira na tekst ispod. GSAP tween-ovi koji menjaju x/y/scale
+           rade aditivno (xPercent: -50, yPercent: -50 se zadržavaju).      */
+        .hero__flower-stage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            will-change: transform, opacity;
+        }
+        .hero__flower-wrap  { position: relative; width: 220px; height: 220px; will-change: transform; }
+        .hero__flower       { width: 100%; height: 100%; will-change: transform;
+                              user-select: none; -webkit-user-drag: none; }
+
+        .hero__text { display: flex; flex-direction: column; align-items: center;
+                      will-change: transform, opacity; }
+
+        .hero__subtitle {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 28px;
+            font-family: var(--font-mono);
+            font-size: 11px; font-weight: 500;
+            letter-spacing: 0.32em; text-transform: uppercase;
+            color: var(--gray);
+        }
+        .hero__star { color: var(--yellow); font-size: 13px; line-height: 1; transform: translateY(-1px); }
+
+        .hero__logo {
+            font-family: var(--font-serif);
+            font-style: italic; font-weight: 500;
+            font-size: clamp(56px, 9vw, 124px);
+            color: var(--cream);
+            letter-spacing: -0.01em; line-height: 1;
+            text-align: center;
+        }
+        .hero__logo .dot {
+            color: var(--orange);
+            display: inline-block;
+            transform: translateY(-0.08em);
+            margin: 0 0.04em;
+        }
+
+        /* =========================================================
+           ABOUT — full split layout (replaces phase-2 placeholder)
+           ========================================================= */
+        .about {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: 55% 45%;
+            align-items: center;
+            padding: 10vh 8vw;
+            gap: 4vw;
+        }
+
+        .about__left {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            max-width: 560px;
+            will-change: transform, opacity;
+        }
+
+        .about__label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--orange);
+            /* fallback visible — gsap.set in JS hides it for entrance */
+            will-change: transform, opacity;
+        }
+
+        .about__title {
+            font-family: var(--font-serif);
+            font-weight: 600;
+            font-size: clamp(48px, 7vw, 96px);
+            line-height: 1.0;
+            letter-spacing: -0.02em;
+            color: var(--cream);
+        }
+        .about__title-line { display: block; overflow: hidden; padding-bottom: 0.06em; }
+        .about__title .word {
+            display: inline-block;
+            /* fallback visible — gsap.set in JS hides it for entrance */
+            will-change: transform, opacity;
+        }
+        .about__title .word.italic { font-style: italic; color: var(--cream); }
+
+        .about__text {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 1.7;
+            color: var(--gray);
+            max-width: 480px;
+            /* fallback visible — gsap.set in JS hides it for entrance */
+            will-change: transform, opacity;
+        }
+
+        .about__stats {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 4vw;
+            margin-top: 8px;
+        }
+        .stat {
+            /* fallback visible — gsap.set in JS hides it for entrance */
+            will-change: transform, opacity;
+        }
+        .stat__num {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 600;
+            font-size: 56px;
+            line-height: 1;
+            color: var(--orange);
+            letter-spacing: -0.02em;
+            display: flex; align-items: baseline;
+        }
+        .stat__num .plus {
+            color: var(--orange);
+            font-size: 38px;
+            margin-left: 2px;
+        }
+        .stat__label {
+            margin-top: 10px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gray);
+        }
+
+        .about__right {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        /* Parallax wrapper — owns the cursor-driven translate so it
+           never collides with GSAP's transform on the inner image. */
+        .about__flower-parallax {
+            width: 70%;
+            max-width: 460px;
+            will-change: transform;
+        }
+        .about__flower {
+            width: 100%;
+            /* fallback visible — gsap.set in JS hides it for entrance */
+            will-change: transform, opacity;
+        }
+
+        /* =========================================================
+           EXPLOSION LAYER — center flower + 4 service cards
+           Sits inside .stage on top of .about. Initially hidden.
+           ========================================================= */
+        .explosion {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .explosion__flower {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 38vw;
+            max-width: 520px;
+            transform: translate(-50%, -50%) scale(0.6);
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        /* Service cards: 2x2 grid covering the stage.
+           Initial state set via gsap.set: at viewport center, scale 0.    */
+        .service-cards { position: absolute; inset: 0; }
+
+        .service-card {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            overflow: hidden;
+            opacity: 0;
+            will-change: transform, opacity;
+            pointer-events: none;   /* enabled via .is-active once cards land */
+        }
+        .service-cards.is-active .service-card { pointer-events: auto; }
+        .service-card--backend  { top: 0; left: 0; }
+        .service-card--ux       { top: 0; right: 0; }
+        .service-card--seo      { bottom: 0; left: 0; }
+        .service-card--support  { bottom: 0; right: 0; }
+
+        /* Color fill via inner element so outer stays scrub-controlled */
+        .service-card__inner {
+            position: relative;
+            width: 100%; height: 100%;
+            padding: clamp(28px, 4vw, 56px);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .service-card--backend .service-card__inner { background: var(--purple); }
+        .service-card--ux      .service-card__inner { background: var(--orange); }
+        .service-card--seo     .service-card__inner { background: var(--pink);   }
+        .service-card--support .service-card__inner { background: var(--yellow); color: #2d3f52; }
+
+        .service-card:hover .service-card__inner { transform: scale(1.03); }
+
+        .service-card__petal {
+            position: absolute;
+            top: clamp(18px, 2.4vw, 28px);
+            right: clamp(18px, 2.4vw, 28px);
+            width: clamp(40px, 5vw, 64px);
+            height: clamp(40px, 5vw, 64px);
+            opacity: 0.15;
+            transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .service-card:hover .service-card__petal { transform: rotate(45deg); }
+
+        .service-card__title {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(36px, 5vw, 72px);
+            line-height: 1;
+            letter-spacing: -0.01em;
+            color: var(--cream);
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .service-card--support .service-card__title { color: #2d3f52; }
+
+        .service-card__detail {
+            margin-top: 18px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition:
+                opacity   0.4s ease 0.05s,
+                transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.05s;
+        }
+        .service-card__desc {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 15px;
+            line-height: 1.55;
+            color: rgba(245, 240, 224, 0.85);
+            max-width: 380px;
+        }
+        .service-card--support .service-card__desc { color: rgba(45, 63, 82, 0.78); }
+
+        .service-card__link {
+            display: inline-block;
+            margin-top: 14px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: var(--cream);
+            border-bottom: 1px solid currentColor;
+            padding-bottom: 4px;
+            transition: transform 0.3s ease;
+        }
+        .service-card--support .service-card__link { color: #2d3f52; }
+        .service-card__link:hover { transform: translateX(4px); }
+
+        .service-card:hover .service-card__title  { transform: translateY(-8px); }
+        .service-card:hover .service-card__detail { opacity: 1; transform: translateY(0); }
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+        @media (max-width: 768px) {
+            .navbar              { padding: 18px 24px; }
+            .navbar.is-scrolled  { padding: 12px 24px; }
+            .navbar__links       { display: none; }
+            .navbar__burger      { display: block; }
+
+            .corner-mark         { top: 22px; left: 24px; font-size: 11px; }
+
+            .hero                { padding: 0 24px 12vh; }
+            .hero__flower-wrap   { width: 170px; height: 170px; }
+            .hero__subtitle      { letter-spacing: 0.26em; }
+
+            /* About: stack columns */
+            .about {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                padding: calc(var(--nav-h) + 16px) 24px 24px;
+                gap: 18px;
+                align-content: center;
+            }
+            .about__left  { order: 2; gap: 18px; }
+            .about__right { order: 1; height: 30vh; }
+            .about__flower { width: 60%; max-width: 220px; }
+            .about__title  { font-size: clamp(36px, 11vw, 56px); }
+            .about__text   { font-size: 15px; }
+            .about__stats  { gap: 6vw; }
+            .stat__num     { font-size: 36px; }
+            .stat__num .plus { font-size: 24px; }
+            .stat__label   { font-size: 10px; letter-spacing: 0.18em; }
+
+            /* Service cards: titles smaller, detail always visible */
+            .service-card__inner    { padding: 22px; }
+            .service-card__detail   { display: none; }
+            .service-card__petal    { width: 36px; height: 36px; top: 14px; right: 14px; }
+
+            /* Hide custom cursor on touch */
+            .cursor              { display: none; }
+            body, a, button      { cursor: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =========================================================
+         CUSTOM CURSOR
+         ========================================================= -->
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+    <!-- =========================================================
+         CORNER MARK
+         ========================================================= -->
+    <div class="corner-mark">// hello.world</div>
+
+    <!-- =========================================================
+         LOADER
+         ========================================================= -->
+    <div class="loader" id="loader">
+        <img src="logo.png" alt="" class="loader__flower" id="loaderFlower">
+    </div>
+
+    <!-- =========================================================
+         NAVBAR
+         ========================================================= -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar__inner">
+            <a href="#" class="navbar__brand" aria-label="Flora&middot;Code home">
+                <img src="logo.png" alt="" class="navbar__flower" id="navFlower">
+                <span>Flora<span class="dot">&middot;</span>Code</span>
+            </a>
+
+            <ul class="navbar__links">
+                <li><a href="#work">Rad</a></li>
+                <li><a href="#services">Usluge</a></li>
+                <li><a href="#process">Proces</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+
+            <button class="navbar__burger" id="burger" aria-label="Otvori meni" aria-expanded="false">
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- =========================================================
+         MOBILE MENU
+         ========================================================= -->
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+        <img src="logo.png" alt="" class="mobile-menu__flower">
+        <ul class="mobile-menu__list">
+            <li><a href="#work">Rad</a></li>
+            <li><a href="#services">Usluge</a></li>
+            <li><a href="#process">Proces</a></li>
+            <li><a href="#contact">Kontakt</a></li>
+        </ul>
+    </div>
+
+    <!-- =========================================================
+         STAGE — pinned wrapper for the entire story arc
+         ========================================================= -->
+    <div class="stage" id="stage">
+
+        <!-- HERO -->
+        <section class="hero" id="hero">
+            <div class="hero__flower-stage" id="flowerStage">
+                <div class="hero__flower-wrap" id="flowerWrap">
+                    <img src="logo.png" alt="Flora&middot;Code flower mark"
+                         class="hero__flower" id="flower">
+                </div>
+            </div>
+
+            <div class="hero__text" id="heroText">
+                <div class="hero__subtitle">
+                    <span>Studio &middot; Belgrade &middot; Est. 2026</span>
+                    <span class="hero__star" aria-hidden="true">&#10022;</span>
+                </div>
+                <h1 class="hero__logo">
+                    Flora<span class="dot">&middot;</span>Code
+                </h1>
+            </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section class="about" id="about">
+            <div class="about__left" id="aboutLeft">
+                <div class="about__label">01 &middot; O nama</div>
+
+                <h2 class="about__title">
+                    <span class="about__title-line">
+                        <span class="word">&#268;etiri</span>&nbsp;<span class="word">stuba.</span>
+                    </span>
+                    <span class="about__title-line">
+                        <span class="word">Jedan</span>&nbsp;<span class="word italic">cvet.</span>
+                    </span>
+                </h2>
+
+                <p class="about__text">
+                    Svaka latica nosi jednu disciplinu. Zajedno &mdash; &#269;ine kompletan studio koji vodi va&scaron; projekat od ideje do &#382;ivog proizvoda.
+                </p>
+
+                <div class="about__stats">
+                    <div class="stat">
+                        <div class="stat__num">
+                            <span data-count="12">0</span><span class="plus">+</span>
+                        </div>
+                        <div class="stat__label">Projekata</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat__num"><span data-count="8">0</span></div>
+                        <div class="stat__label">Klijenata</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat__num"><span data-count="1">0</span></div>
+                        <div class="stat__label">God. iskustva</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about__right" id="aboutRight">
+                <div class="about__flower-parallax" id="aboutFlowerParallax">
+                    <img src="logo.png" alt="" class="about__flower" id="aboutFlower">
+                </div>
+            </div>
+        </section>
+
+        <!-- EXPLOSION + SERVICES -->
+        <div class="explosion" id="explosion">
+
+            <!-- Center flower that takes over from about__flower
+                 and explodes into 4 cards.                           -->
+            <img src="logo.png" alt="" class="explosion__flower" id="explosionFlower">
+
+            <div class="service-cards" id="serviceCards">
+
+                <!-- BACKEND (TL, purple) -->
+                <article class="service-card service-card--backend" data-card="backend">
+                    <div class="service-card__inner">
+                        <img src="logo.png" alt="" class="service-card__petal">
+                        <h3 class="service-card__title">Backend</h3>
+                        <div class="service-card__detail">
+                            <p class="service-card__desc">
+                                Sna&#382;no jezgro: brze API rute, &#269;ista baza, sigurnosni sloj. Tvoj proizvod skalira bez prepravki.
+                            </p>
+                            <a class="service-card__link" href="#">Saznaj vi&scaron;e &rarr;</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- UI/UX (TR, orange) -->
+                <article class="service-card service-card--ux" data-card="ux">
+                    <div class="service-card__inner">
+                        <img src="logo.png" alt="" class="service-card__petal">
+                        <h3 class="service-card__title">UI&nbsp;/&nbsp;UX</h3>
+                        <div class="service-card__detail">
+                            <p class="service-card__desc">
+                                Interfejs koji vodi korisnika i &#269;uva ti bud&#382;et. Wireframe, prototip, iteracija &mdash; bez slepih ulica.
+                            </p>
+                            <a class="service-card__link" href="#">Saznaj vi&scaron;e &rarr;</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- SEO (BL, pink) -->
+                <article class="service-card service-card--seo" data-card="seo">
+                    <div class="service-card__inner">
+                        <img src="logo.png" alt="" class="service-card__petal">
+                        <h3 class="service-card__title">SEO</h3>
+                        <div class="service-card__detail">
+                            <p class="service-card__desc">
+                                Sajt koji Google razume i klijent prona&#273;e. Tehni&#269;ki audit, sadr&#382;aj, brzina &mdash; sve u jednom procesu.
+                            </p>
+                            <a class="service-card__link" href="#">Saznaj vi&scaron;e &rarr;</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- SUPPORT (BR, yellow) -->
+                <article class="service-card service-card--support" data-card="support">
+                    <div class="service-card__inner">
+                        <img src="logo.png" alt="" class="service-card__petal">
+                        <h3 class="service-card__title">Support</h3>
+                        <div class="service-card__detail">
+                            <p class="service-card__desc">
+                                Posle launch-a, mi ostajemo. Pra&#263;enje, sigurnosne nadogradnje, brzi fix kad ne&scaron;to &scaron;kripi.
+                            </p>
+                            <a class="service-card__link" href="#">Saznaj vi&scaron;e &rarr;</a>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* =========================================================
+           SETUP
+           ========================================================= */
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Lock scroll until intro finishes
+        document.documentElement.style.overflow = 'hidden';
+
+        // ABOUT initial state — off-screen right, slides in during Phase A
+        gsap.set('#about', { xPercent: 100 });
+
+        // HERO FLOWER — declare the -50%/-50% centering to GSAP explicitly.
+        // CSS sets `transform: translate(-50%, -50%)` for the absolute-centering
+        // fallback, but GSAP can't recover the percent units from a parsed
+        // matrix. Without this set(), the first scroll-exit tween (x: -40vw)
+        // replaces the -50% offset with a pixel value and the flower jumps
+        // ~110px off-center the moment scrubbing begins.
+        gsap.set('#flowerStage', { xPercent: -50, yPercent: -50 });
+
+        // SERVICE CARDS initial state — at stage center, scale 0, hidden.
+        // Each card is at its natural corner; xPercent/yPercent collapse
+        // it to viewport center so the explosion radiates outward.
+        gsap.set('.service-card--backend', { xPercent:  50, yPercent:  50, scale: 0, opacity: 0 });
+        gsap.set('.service-card--ux',      { xPercent: -50, yPercent:  50, scale: 0, opacity: 0 });
+        gsap.set('.service-card--seo',     { xPercent:  50, yPercent: -50, scale: 0, opacity: 0 });
+        gsap.set('.service-card--support', { xPercent: -50, yPercent: -50, scale: 0, opacity: 0 });
+
+        // Service card title + petal start hidden — fade in at end of explosion
+        gsap.set('.service-card__title', { opacity: 0, y: 20 });
+        gsap.set('.service-card__petal', { opacity: 0 });
+
+        // ABOUT entrance initial states — moved out of CSS so the section
+        // is visible by default if JS / ScrollTrigger ever fail to fire.
+        gsap.set('.about__label',       { opacity: 0, y: 20 });
+        gsap.set('.about__title .word', { opacity: 0, y: '110%' });
+        gsap.set('.about__text',        { opacity: 0, y: 30 });
+        gsap.set('.stat',               { opacity: 0, y: 20 });
+        gsap.set('.about__flower',      { opacity: 0, scale: 0.8 });
+
+        const CONFIG = {
+            cursorLerp:        0.12,
+            parallaxStrength:  15,
+            floatAmplitude:    12,
+            floatDuration:     4,
+            aboutFlowerParallax: 8,   // weaker parallax on about flower
+        };
+
+        /* =========================================================
+           CUSTOM CURSOR
+           ========================================================= */
+        (() => {
+            const cursor = document.getElementById('cursor');
+            const mouse  = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            const pos    = { x: mouse.x, y: mouse.y };
+
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+
+            const tick = () => {
+                pos.x += (mouse.x - pos.x) * CONFIG.cursorLerp;
+                pos.y += (mouse.y - pos.y) * CONFIG.cursorLerp;
+                cursor.style.transform =
+                    `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
+                requestAnimationFrame(tick);
+            };
+            tick();
+        })();
+
+        /* =========================================================
+           INTRO SEQUENCE — loader → hero → navbar fade-in
+           ========================================================= */
+        (() => {
+            const loader        = document.getElementById('loader');
+            const loaderFlower  = document.getElementById('loaderFlower');
+            const hero          = document.getElementById('hero');
+            const navbar        = document.getElementById('navbar');
+
+            const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+            tl.to(loaderFlower, {
+                opacity: 1, scale: 1.05, rotation: 20,
+                duration: 1.1, ease: 'power3.out',
+            })
+            .to(loaderFlower, {
+                scale: 1.0, duration: 0.35, ease: 'power2.inOut',
+            })
+            .to({}, { duration: 0.25 })
+            .to(loader, {
+                opacity: 0, duration: 0.5, ease: 'power2.inOut',
+                onComplete: () => { loader.style.display = 'none'; },
+            })
+            .to(hero, {
+                opacity: 1, duration: 0.7, ease: 'power2.out',
+                onComplete: initHeroMotion,
+            }, '-=0.25')
+            .to(navbar, {
+                opacity: 1, duration: 0.6, ease: 'power2.out',
+                onComplete: () => {
+                    document.documentElement.style.overflow = '';
+                    // Force ScrollTrigger to recalc all positions now that
+                    // the document is finally scrollable. Without this, any
+                    // ScrollTrigger created while overflow was hidden may
+                    // hold stale start/end values → pin/scrub misfires.
+                    ScrollTrigger.refresh();
+                }
+            }, '-=0.4');
+        })();
+
+        /* =========================================================
+           HERO MOTION — float + parallax (idle only)
+           ========================================================= */
+        function initHeroMotion() {
+            const flower      = document.getElementById('flower');
+            const flowerWrap  = document.getElementById('flowerWrap');
+
+            gsap.to(flower, {
+                y: -CONFIG.floatAmplitude,
+                duration: CONFIG.floatDuration / 2,
+                ease: 'sine.inOut',
+                yoyo: true, repeat: -1,
+            });
+
+            const target = { x: 0, y: 0 };
+            const cur    = { x: 0, y: 0 };
+
+            window.addEventListener('mousemove', (e) => {
+                if (window.scrollY > 8) return;
+                const cx = window.innerWidth  / 2;
+                const cy = window.innerHeight / 2;
+                target.x = ((e.clientX - cx) / cx) * CONFIG.parallaxStrength;
+                target.y = ((e.clientY - cy) / cy) * CONFIG.parallaxStrength;
+            });
+
+            const loop = () => {
+                if (window.scrollY > 8) { target.x = 0; target.y = 0; }
+                cur.x += (target.x - cur.x) * 0.08;
+                cur.y += (target.y - cur.y) * 0.08;
+                flowerWrap.style.transform = `translate(${cur.x}px, ${cur.y}px)`;
+                requestAnimationFrame(loop);
+            };
+            loop();
+
+            initAboutFlowerParallax();
+            initScrollExit();
+        }
+
+        /* =========================================================
+           ABOUT FLOWER — weaker cursor parallax (max 8px)
+           Only active while user is past hero scroll exit.
+           ========================================================= */
+        function initAboutFlowerParallax() {
+            const wrap   = document.getElementById('aboutFlowerParallax');
+            const target = { x: 0, y: 0 };
+            const cur    = { x: 0, y: 0 };
+
+            window.addEventListener('mousemove', (e) => {
+                const cx = window.innerWidth  / 2;
+                const cy = window.innerHeight / 2;
+                target.x = ((e.clientX - cx) / cx) * CONFIG.aboutFlowerParallax;
+                target.y = ((e.clientY - cy) / cy) * CONFIG.aboutFlowerParallax;
+            });
+
+            const loop = () => {
+                cur.x += (target.x - cur.x) * 0.06;
+                cur.y += (target.y - cur.y) * 0.06;
+                wrap.style.transform = `translate(${cur.x}px, ${cur.y}px)`;
+                requestAnimationFrame(loop);
+            };
+            loop();
+        }
+
+        /* =========================================================
+           NAVBAR — scrolled state
+           ========================================================= */
+        (() => {
+            const navbar = document.getElementById('navbar');
+            const onScroll = () => {
+                navbar.classList.toggle('is-scrolled', window.scrollY > 50);
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
+        })();
+
+        /* =========================================================
+           MOBILE MENU
+           ========================================================= */
+        (() => {
+            const burger = document.getElementById('burger');
+            const menu   = document.getElementById('mobileMenu');
+            const links  = menu.querySelectorAll('a');
+
+            const close = () => {
+                burger.classList.remove('is-open');
+                menu.classList.remove('is-open');
+                burger.setAttribute('aria-expanded', 'false');
+                menu.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            };
+            const open = () => {
+                burger.classList.add('is-open');
+                menu.classList.add('is-open');
+                burger.setAttribute('aria-expanded', 'true');
+                menu.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            };
+
+            burger.addEventListener('click', () => {
+                burger.classList.contains('is-open') ? close() : open();
+            });
+            links.forEach((a) => a.addEventListener('click', close));
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) close();
+            });
+        })();
+
+        /* =========================================================
+           COUNTUP — fired once when stats reveal during Phase B
+           ========================================================= */
+        let countUpFired = false;
+        function startCountUp() {
+            if (countUpFired) return;
+            countUpFired = true;
+            document.querySelectorAll('[data-count]').forEach((el) => {
+                const target = +el.dataset.count;
+                gsap.fromTo(el,
+                    { innerText: 0 },
+                    {
+                        innerText: target,
+                        duration:  2,
+                        ease:      'power2.out',
+                        snap:      { innerText: 1 },
+                    }
+                );
+            });
+        }
+
+        /* =========================================================
+           STAGE TIMELINE — ScrollTrigger pin (3 viewports)
+           Phases:
+             0.00 → 0.25  A. Hero exit + about slide-in
+             0.25 → 0.40  B. About entrance reveals (one-shot via call)
+             0.40 → 1.00  C. Explosion → service cards
+           ========================================================= */
+        function initScrollExit() {
+
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger:       '#stage',
+                    start:         'top top',
+                    end:           '+=300%',
+                    pin:           true,
+                    scrub:         1.5,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true,
+                    // enable hover/click on cards only after they've landed
+                    onUpdate: (self) => {
+                        document.getElementById('serviceCards')
+                                .classList.toggle('is-active', self.progress > 0.95);
+                    },
+                    // Safety: if user lands (or refreshes) past the entrance
+                    // threshold, tl.call() in scrub mode might not fire — so
+                    // trigger the entrance manually whenever ScrollTrigger
+                    // recomputes and progress is already past 0.27.
+                    onRefresh: (self) => {
+                        if (self.progress > 0.27 && !aboutEntranceFired) {
+                            playAboutEntrance();
+                        }
+                    }
+                }
+            });
+
+            /* ---------------------------------------------------------
+               PHASE A — Hero exit (0.00 → 0.25)
+               --------------------------------------------------------- */
+            tl.to('#flowerStage', {
+                x: '-40vw', y: '-35vh', scale: 0.15,
+                ease: 'none', duration: 0.25,
+            }, 0);
+
+            tl.to('#heroText', {
+                opacity: 0, y: -30,
+                ease: 'none', duration: 0.18,
+            }, 0);
+
+            tl.to('#about', {
+                xPercent: 0,
+                ease: 'none', duration: 0.25,
+            }, 0);
+
+            // hero flower → swap to navbar flower at end of Phase A
+            tl.to('#flowerStage', {
+                opacity: 0,
+                ease: 'none', duration: 0.04,
+            }, 0.21);
+
+            tl.to('#navFlower', {
+                opacity: 1,
+                ease: 'none', duration: 0.04,
+            }, 0.21);
+
+            /* ---------------------------------------------------------
+               PHASE B — About entrance reveals (0.25 → 0.40)
+               One-shot animations fired via tl.call so they run at fixed
+               wall-clock duration, not scrubbed (scroll back won't reverse).
+               --------------------------------------------------------- */
+            tl.call(playAboutEntrance, [], 0.27);
+
+            /* ---------------------------------------------------------
+               PHASE C — Explosion → services (0.40 → 1.00)
+               Sub-phases (relative to Phase C duration of 0.60):
+                 0.00–0.20  text fades, flower travels to center
+                 0.20–0.40  flower rotates +45°
+                 0.40–0.60  flower fades, 4 cards appear at center
+                 0.60–1.00  cards fly to corners, content fades in
+               --------------------------------------------------------- */
+
+            // C-0 → 0.20  (timeline 0.40 → 0.52): about left fades + slides left
+            tl.to('#aboutLeft', {
+                opacity: 0, x: -50,
+                ease: 'none', duration: 0.10,
+            }, 0.40);
+
+            // about flower fades while explosion flower fades in
+            tl.to('#aboutFlower', {
+                opacity: 0,
+                ease: 'none', duration: 0.08,
+            }, 0.42);
+
+            tl.to('#explosionFlower', {
+                opacity: 1, scale: 1.3,
+                ease: 'power2.out', duration: 0.10,
+            }, 0.42);
+
+            // C-0.20 → 0.40 (timeline 0.52 → 0.64): rotation accelerates
+            tl.to('#explosionFlower', {
+                rotation: '+=45',
+                ease: 'none', duration: 0.12,
+            }, 0.52);
+
+            // C-0.40 → 0.60 (timeline 0.64 → 0.76):
+            //   flower fades + shrinks
+            //   4 cards fade in at center (still scale 0 → 0.4)
+            tl.to('#explosionFlower', {
+                opacity: 0, scale: 0.5,
+                ease: 'power2.in', duration: 0.10,
+            }, 0.64);
+
+            tl.to('.service-card', {
+                opacity: 1,
+                ease: 'none', duration: 0.06,
+                stagger: 0.005,
+            }, 0.66);
+
+            /* C-0.60 → 1.00 (timeline 0.76 → 1.00):
+               cards fly to corners + grow.
+               Mobile: skip the radial flight, just fade + scale at final pos. */
+            if (isMobile) {
+                tl.to('.service-card', {
+                    xPercent: 0, yPercent: 0, scale: 1,
+                    ease: 'power3.out', duration: 0.20,
+                    stagger: 0.02,
+                }, 0.76);
+            } else {
+                tl.to('.service-card', {
+                    xPercent: 0, yPercent: 0, scale: 1,
+                    ease: 'power3.out', duration: 0.22,
+                    stagger: 0.025,
+                }, 0.76);
+            }
+
+            // C-0.85 → 1.00: card content fades in
+            tl.to('.service-card__title', {
+                opacity: 1, y: 0,
+                ease: 'power2.out', duration: 0.08,
+                stagger: 0.015,
+            }, 0.90);
+
+            tl.to('.service-card__petal', {
+                opacity: 0.15,
+                ease: 'none', duration: 0.08,
+                stagger: 0.015,
+            }, 0.92);
+        }
+
+        /* =========================================================
+           ABOUT ENTRANCE — one-shot reveal (label / title / text /
+           stats / right flower). Fires from scrub timeline at progress
+           0.27. Guarded so scroll-back doesn't replay it.
+           ========================================================= */
+        let aboutEntranceFired = false;
+        function playAboutEntrance() {
+            if (aboutEntranceFired) return;
+            aboutEntranceFired = true;
+
+            const reveal = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+            reveal
+                .to('.about__label', {
+                    opacity: 1, y: 0, duration: 0.6,
+                })
+                .to('.about__title .word', {
+                    opacity: 1, y: '0%',
+                    duration: 0.9,
+                    stagger: 0.1,
+                }, '-=0.3')
+                .to('.about__text', {
+                    opacity: 1, y: 0, duration: 0.7,
+                }, '-=0.4')
+                .to('.about__flower', {
+                    opacity: 1, scale: 1,
+                    duration: 1.1, ease: 'power3.out',
+                }, '-=1.2')
+                .to('.stat', {
+                    opacity: 1, y: 0,
+                    duration: 0.5,
+                    stagger: 0.12,
+                    onStart: startCountUp,
+                }, '-=0.4');
+        }
+    </script>
+</body>
+</html>
