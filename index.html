@@ -43,7 +43,7 @@
            ========================================================= */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html { scroll-behavior: auto; }
+        html { scroll-behavior: auto; overflow-x: hidden; }
 
         body {
             background-color: var(--bg);
@@ -600,6 +600,917 @@
             .cursor              { display: none; }
             body, a, button      { cursor: auto; }
         }
+
+        /* =========================================================
+           PROJECTS — cinematic horizontal scroll (7 cards × 100vw)
+           Background: #1a2530 (slightly darker than global --bg)
+           ========================================================= */
+        .projects-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: #1a2530;
+            overflow: hidden;
+        }
+
+        /* "RAD →" cinematic wipe — enters from right on section start */
+        .projects-cinematic {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: 20vw;
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            color: var(--cream);
+            opacity: 0.08;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 3;
+            will-change: transform;
+        }
+
+        /* "02 · RAD" section label — top left */
+        .projects-label {
+            position: absolute;
+            top: calc(var(--nav-h) + 40px);
+            left: 6vw;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--orange);
+            z-index: 4;
+            will-change: opacity, transform;
+        }
+
+        /* Horizontal track — 7 cards laid out in a row */
+        .projects-track {
+            display: flex;
+            flex-wrap: nowrap;
+            height: 100vh;
+            will-change: transform;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ---- PROJECT CARD ---- */
+        .project-card {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            display: grid;
+            grid-template-columns: 50% 50%;
+            align-items: center;
+            padding: 0 6vw;
+            overflow: hidden;
+        }
+
+        /* Accent tint on right half of each card */
+        .project-card::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 0 50%;
+            background: var(--card-accent, #e8622a);
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* LEFT — text content */
+        .project-card__left {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            padding-right: 4vw;
+        }
+
+        .project-num {
+            font-family: var(--font-mono);
+            font-size: 120px;
+            font-weight: 500;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            color: var(--cream);
+            opacity: 0.1;
+            margin-bottom: 4px;
+            user-select: none;
+        }
+
+        .project-cat {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--card-accent, var(--orange));
+            margin-bottom: 18px;
+        }
+
+        .project-title {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 600;
+            font-size: clamp(48px, 5vw, 80px);
+            line-height: 1;
+            letter-spacing: -0.01em;
+            color: var(--cream);
+            margin-bottom: 20px;
+        }
+
+        .project-desc {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 17px;
+            line-height: 1.65;
+            color: var(--gray);
+            max-width: 400px;
+            margin-bottom: 26px;
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gray);
+            text-decoration: none;
+            margin-bottom: 26px;
+            transition: color 0.3s ease;
+            width: fit-content;
+        }
+        .project-link .arrow {
+            display: inline-block;
+            line-height: 1;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .project-link:hover            { color: var(--card-accent, var(--orange)); }
+        .project-link:hover .arrow     { transform: translate(3px, -3px); }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .project-tag {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--gray);
+            border: 1px solid rgba(138, 155, 176, 0.3);
+            border-radius: 100px;
+            padding: 6px 14px;
+            transition:
+                color            0.3s ease,
+                border-color     0.3s ease,
+                background-color 0.3s ease;
+            cursor: default;
+        }
+        .project-tag:hover {
+            background:   var(--card-accent, var(--orange));
+            border-color: var(--card-accent, var(--orange));
+            color: #1a2530;
+        }
+
+        /* RIGHT — browser mockup */
+        .project-card__right {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 4vh 0;
+        }
+
+        .browser-mockup {
+            width: 100%;
+            max-width: 580px;
+            border-radius: 12px;
+            background: #1e1e1e;
+            box-shadow:
+                0 40px 80px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            transition:
+                transform  0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.5s ease;
+            will-change: transform;
+        }
+        .browser-mockup:hover {
+            transform: scale(1.02);
+            box-shadow:
+                0 60px 100px rgba(0, 0, 0, 0.6),
+                0 0 0 2px var(--card-accent, var(--orange));
+        }
+
+        .browser-bar {
+            height: 34px;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .browser-dot--red    { background: #ff5f57; }
+        .browser-dot--yellow { background: #febc2e; }
+        .browser-dot--green  { background: #28c840; }
+
+        .browser-screen {
+            position: relative;
+            width: 100%;
+            padding-bottom: 60%;
+            overflow: hidden;
+            background: #0d1117;
+        }
+        .project-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            display: block;
+            will-change: transform;
+        }
+
+        /* Bottom progress indicator — fixed, shown only during projects pin */
+        .projects-progress {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0 6vw 22px;
+            z-index: 95;
+            pointer-events: none;
+            will-change: opacity;
+        }
+        .projects-progress__info {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+        .projects-progress__counter,
+        .projects-progress__name {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gray);
+        }
+        .projects-progress__bar {
+            width: 100%;
+            height: 1px;
+            background: rgba(138, 155, 176, 0.15);
+            position: relative;
+        }
+        .projects-progress__fill {
+            position: absolute;
+            left: 0; top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--orange);
+            transition: background-color 0.6s ease;
+        }
+
+        /* PROJECTS — Mobile fallback (vertical stack, no pin/scroll) */
+        @media (max-width: 768px) {
+            .projects-section {
+                height: auto;
+                overflow-x: hidden;
+                overflow-y: visible;
+                padding: 80px 24px;
+            }
+            .projects-cinematic          { display: none; }
+            .projects-label {
+                position: relative;
+                top: auto; left: auto;
+                opacity: 1 !important;
+                transform: none !important;
+                margin-bottom: 36px;
+                display: block;
+            }
+            .projects-track {
+                flex-direction: column;
+                height: auto;
+                gap: 60px;
+            }
+            .project-card {
+                width: 100%;
+                height: auto;
+                grid-template-columns: 1fr;
+                padding: 0;
+                gap: 28px;
+            }
+            .project-card::after     { display: none; }
+            .project-card__left      { padding-right: 0; }
+            .project-card__right     { height: auto; padding: 0; justify-content: flex-start; }
+            .project-num             { font-size: 64px; }
+            .project-title           { font-size: clamp(36px, 9vw, 56px); }
+            .project-desc            { font-size: 15px; }
+            .browser-mockup          { max-width: 100%; }
+            .projects-progress       { display: none; }
+        }
+
+        /* =========================================================
+           PROCESS — vertical scroll, SVG stem grows + petals reveal
+           Section is 500vh tall; .process__sticky pinned by GSAP.
+           ========================================================= */
+        .process {
+            position: relative;
+            width: 100%;
+            min-height: 500vh;
+            background: var(--bg);
+        }
+
+        .process__sticky {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 30% 70%;
+            align-items: center;
+            padding: 0 8vw;
+        }
+
+        /* "PROCES &rarr;" watermark — slides through during entry */
+        .process__watermark {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: clamp(180px, 32vw, 480px);
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+            color: var(--cream);
+            opacity: 0.08;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            will-change: transform;
+        }
+
+        /* "03 &middot; PROCES" label — fixed top-left of sticky */
+        .process__label {
+            position: absolute;
+            top: calc(var(--nav-h) + 40px);
+            left: 8vw;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--orange);
+            z-index: 3;
+            will-change: transform, opacity;
+        }
+
+        /* LEFT — SVG stem column */
+        .process__stem-col {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .process__stem-svg {
+            height: 80vh;
+            width: auto;
+            overflow: visible;
+        }
+
+        .process__stem-svg .petal {
+            will-change: transform, opacity;
+        }
+
+        /* Bloom flower (logo.png) — appears at top of stem after step 5 */
+        .process__bloom-wrap {
+            position: absolute;
+            top: 9%;
+            left: 50%;
+            width: 110px;
+            height: 110px;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+        .process__bloom {
+            width: 100%;
+            height: 100%;
+            display: block;
+            will-change: transform;
+        }
+
+        .process__bloom-text {
+            position: absolute;
+            top: calc(9% + 130px);
+            left: 50%;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 400;
+            font-size: 22px;
+            color: var(--cream);
+            white-space: nowrap;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+
+        /* RIGHT — step text column (all 5 stacked, only one active) */
+        .process__steps-col {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .process__steps {
+            display: grid;
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .step {
+            grid-column: 1;
+            grid-row: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            will-change: transform, opacity;
+        }
+
+        .step__num {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            font-size: 80px;
+            line-height: 1;
+            opacity: 0.2;
+            margin-bottom: 18px;
+            letter-spacing: -0.02em;
+        }
+
+        .step__title {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 600;
+            font-size: 48px;
+            line-height: 1;
+            letter-spacing: -0.01em;
+            color: var(--cream);
+            margin-bottom: 26px;
+        }
+
+        .step__desc {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 1.7;
+            color: var(--gray);
+            max-width: 480px;
+        }
+
+        /* Per-step accent on the number */
+        .step-01 .step__num { color: #f5f0e0; }
+        .step-02 .step__num { color: #e8407a; }
+        .step-03 .step__num { color: #6b3fa0; }
+        .step-04 .step__num { color: #e8622a; }
+        .step-05 .step__num { color: #f5c842; }
+
+        /* =========================================================
+           CONTACT SECTION — conversational form + info columns
+           ========================================================= */
+        .contact {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            background: #1a2530;
+            padding: 10vh 8vw;
+            will-change: transform, opacity;
+        }
+
+        .contact__header {
+            text-align: center;
+            margin-bottom: 8vh;
+        }
+
+        .contact__deco-flower {
+            width: 120px;
+            height: 120px;
+            display: block;
+            margin: 0 auto 28px;
+            will-change: transform;
+        }
+
+        .contact__label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--orange);
+            margin-bottom: 20px;
+        }
+
+        .contact__title {
+            font-family: var(--font-serif);
+            font-size: clamp(48px, 7vw, 96px);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--cream);
+            margin-bottom: 16px;
+        }
+
+        .contact__title em  { font-style: italic; font-weight: 400; display: block; }
+        .contact__title strong { font-style: normal; font-weight: 700; display: block; }
+
+        .contact__subtitle {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+
+        .contact__body {
+            display: grid;
+            grid-template-columns: 60fr 40fr;
+            gap: 8vw;
+            align-items: start;
+        }
+
+        .contact__form-wrap { position: relative; }
+
+        .contact__progress {
+            width: 100%;
+            height: 1px;
+            background: rgba(138, 155, 176, 0.2);
+            margin-bottom: 52px;
+            position: relative;
+        }
+
+        .contact__progress-fill {
+            position: absolute;
+            left: 0; top: 0;
+            height: 100%;
+            width: 25%;
+            background: var(--orange);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .conv-step        { display: none; }
+        .conv-step.active { display: block; }
+
+        .conv-step label {
+            display: block;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 400;
+            font-size: 28px;
+            color: var(--cream);
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+
+        .conv-step input[type="text"],
+        .conv-step input[type="email"],
+        .conv-step textarea {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--gray);
+            color: var(--cream);
+            font-family: var(--font-mono);
+            font-size: 16px;
+            padding: 12px 0;
+            outline: none;
+            transition: border-color 0.3s ease;
+            caret-color: var(--orange);
+        }
+
+        .conv-step input[type="text"]::placeholder,
+        .conv-step input[type="email"]::placeholder,
+        .conv-step textarea::placeholder {
+            color: rgba(138, 155, 176, 0.5);
+        }
+
+        .conv-step input[type="text"]:focus,
+        .conv-step input[type="email"]:focus,
+        .conv-step textarea:focus {
+            border-bottom-color: var(--orange);
+        }
+
+        .conv-step textarea { resize: none; min-height: 100px; }
+
+        @keyframes inputShake {
+            0%, 100% { transform: translateX(0); }
+            15%       { transform: translateX(-7px); }
+            30%       { transform: translateX(7px); }
+            45%       { transform: translateX(-5px); }
+            60%       { transform: translateX(5px); }
+            75%       { transform: translateX(-2px); }
+        }
+
+        .input-shake { animation: inputShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+
+        .type-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        .pill {
+            border: 1px solid var(--gray);
+            border-radius: 999px;
+            padding: 8px 20px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            color: var(--gray);
+            cursor: pointer;
+            transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+        }
+
+        .pill:hover        { border-color: var(--orange); color: var(--orange); }
+        .pill.active       { border-color: var(--orange); color: var(--orange); background: rgba(232,98,42,0.1); }
+
+        .next-btn {
+            margin-top: 28px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            letter-spacing: 0.2em;
+            color: var(--gray);
+            transition: color 0.3s ease;
+            display: block;
+        }
+
+        .next-btn:hover { color: var(--orange); }
+
+        .submit-btn {
+            display: inline-block;
+            margin-top: 32px;
+            background: var(--orange);
+            color: var(--cream);
+            border: none;
+            padding: 16px 40px;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover { background: #c9501f; }
+        .submit-btn.shake { animation: inputShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+
+        .contact__success { display: none; }
+
+        .contact__success-text {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 36px;
+            color: var(--cream);
+            margin-bottom: 12px;
+        }
+
+        .contact__success-sub {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: var(--gray);
+            text-transform: uppercase;
+        }
+
+        .flower-particle {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 9000;
+            will-change: transform, opacity;
+        }
+
+        .contact__info { position: relative; padding-top: 4px; }
+
+        .contact__info-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: var(--orange);
+            margin-bottom: 36px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 28px;
+            transition: transform 0.3s ease;
+        }
+
+        .contact-item:hover { transform: translateX(4px); }
+
+        .contact-item__icon {
+            font-size: 16px;
+            color: var(--gray);
+            flex-shrink: 0;
+            line-height: 1.6;
+            opacity: 0.7;
+        }
+
+        .contact-item__text { display: flex; flex-direction: column; gap: 3px; }
+
+        .contact-item__label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gray);
+            opacity: 0.6;
+        }
+
+        .contact-item__value {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--cream);
+            transition: color 0.3s ease;
+        }
+
+        .contact-item__value a { color: inherit; }
+        .contact-item:hover .contact-item__value { color: var(--orange); }
+
+        .contact__info-deco {
+            position: absolute;
+            bottom: -20px; right: 0;
+            width: 140px;
+            opacity: 0.06;
+            pointer-events: none;
+            animation: slowRotate 30s linear infinite;
+        }
+
+        @keyframes slowRotate { to { transform: rotate(360deg); } }
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+        .footer {
+            border-top: 1px solid rgba(138, 155, 176, 0.2);
+            padding: 36px 8vw;
+            background: #1a2530;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .footer__brand { display: flex; flex-direction: column; gap: 5px; }
+
+        .footer__brand-name {
+            font-family: var(--font-serif);
+            font-size: 18px;
+            color: var(--cream);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .footer__brand-name:hover { color: var(--orange); }
+
+        .footer__brand-copy {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 0.06em;
+        }
+
+        .footer__nav { display: flex; gap: 28px; }
+
+        .footer__nav a {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--gray);
+            transition: color 0.3s ease;
+        }
+
+        .footer__nav a:hover { color: var(--orange); }
+
+        .footer__right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 16px;
+        }
+
+        .footer__made {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--gray);
+            letter-spacing: 0.06em;
+        }
+
+        .footer__ig {
+            color: var(--gray);
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer__ig:hover { color: var(--orange); }
+
+        /* PROCESS — Mobile fallback (no pin, no SVG, simple list) */
+        @media (max-width: 768px) {
+            .process {
+                min-height: 0;
+                height: auto;
+                padding: 80px 24px;
+            }
+            .process__sticky {
+                position: relative;
+                top: auto;
+                height: auto;
+                grid-template-columns: 1fr;
+                padding: 0;
+                overflow: visible;
+            }
+            .process__watermark { display: none; }
+            .process__label {
+                position: relative;
+                top: auto; left: auto;
+                margin-bottom: 36px;
+                opacity: 1;
+                transform: none;
+            }
+            .process__stem-col,
+            .process__bloom-wrap,
+            .process__bloom-text { display: none; }
+
+            .process__steps-col { height: auto; display: block; }
+            .process__steps { display: block; max-width: 100%; }
+            .step {
+                display: block;
+                position: relative;
+                opacity: 1 !important;
+                transform: none !important;
+                padding-left: 22px;
+                margin-bottom: 56px;
+                border-left: 3px solid;
+            }
+            .step:last-child { margin-bottom: 0; }
+            .step-01 { border-color: #f5f0e0; }
+            .step-02 { border-color: #e8407a; }
+            .step-03 { border-color: #6b3fa0; }
+            .step-04 { border-color: #e8622a; }
+            .step-05 { border-color: #f5c842; }
+
+            .step__num   { font-size: 56px; margin-bottom: 12px; }
+            .step__title { font-size: 32px; margin-bottom: 16px; }
+            .step__desc  { font-size: 15px; }
+
+            /* Contact */
+            .contact              { padding: 60px 24px 80px; }
+            .contact__body        { grid-template-columns: 1fr; gap: 60px; }
+            .contact__deco-flower { width: 80px; height: 80px; }
+            .contact__title       { font-size: clamp(40px, 12vw, 64px); }
+            .contact__info-deco   { width: 100px; }
+
+            /* Footer */
+            .footer        { grid-template-columns: 1fr; gap: 24px; padding: 36px 24px; text-align: center; }
+            .footer__nav   { justify-content: center; flex-wrap: wrap; gap: 16px; }
+            .footer__right { justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -796,6 +1707,554 @@
 
     </div>
 
+    <!-- =========================================================
+         PROJECTS — cinematic horizontal scroll, 7 case studies
+         id="work" matches navbar href="#work"
+         ========================================================= -->
+    <section class="projects-section" id="work">
+
+        <!-- Cinematic wipe: "RAD →" enters from right on first scroll in -->
+        <div class="projects-cinematic" id="projectsCinematic">RAD &rarr;</div>
+
+        <!-- Section label -->
+        <div class="projects-label" id="projectsLabel">02 &middot; RAD</div>
+
+        <!-- Horizontal track: all 7 cards in a flex row -->
+        <div class="projects-track" id="projectsTrack">
+
+            <!-- PROJECT 01: KG POJASEVI -->
+            <article class="project-card"
+                     data-num="01" data-name="KG Pojasevi"
+                     style="--card-accent: #b5f000;">
+                <div class="project-card__left">
+                    <div class="project-num">01</div>
+                    <div class="project-cat">AUTO &middot; BRANDING</div>
+                    <h2 class="project-title">KG Pojasevi</h2>
+                    <p class="project-desc">
+                        Sajt za proi&shy;zvo&dj;a&ccaron;a sigurnosnih pojaseva iz Kragujevca. Tamna estetika, neon zeleni akcenti, full animirani hero.
+                    </p>
+                    <a class="project-link" href="https://kgpojasevi.vercel.app" target="_blank" rel="noopener">
+                        Pogledaj sajt <span class="arrow">&#8599;</span>
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag">HTML</span>
+                        <span class="project-tag">CSS</span>
+                        <span class="project-tag">JS</span>
+                        <span class="project-tag">GSAP</span>
+                    </div>
+                </div>
+                <div class="project-card__right">
+                    <div class="browser-mockup">
+                        <div class="browser-bar">
+                            <div class="browser-dot browser-dot--red"></div>
+                            <div class="browser-dot browser-dot--yellow"></div>
+                            <div class="browser-dot browser-dot--green"></div>
+                        </div>
+                        <div class="browser-screen">
+                            <img class="project-img"
+                                 src="screenshot-kg.jpg"
+                                 alt="KG Pojasevi website screenshot"
+                                 data-project="kg-pojasevi">
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PROJECT 02: LEXORA CLEAN -->
+            <article class="project-card"
+                     data-num="02" data-name="Lexora Clean"
+                     style="--card-accent: #c9a84c;">
+                <div class="project-card__left">
+                    <div class="project-num">02</div>
+                    <div class="project-cat">PREMIUM &middot; SERVIS</div>
+                    <h2 class="project-title">Lexora Clean</h2>
+                    <p class="project-desc">
+                        Premium &ccaron;i&scaron;&cacute;enje name&scaron;taja i vozila &mdash; crno-zlatni identitet, SEO optimizacija, kontakt forma sa Cloudinary upload-om.
+                    </p>
+                    <a class="project-link" href="https://lexoraclean.com" target="_blank" rel="noopener">
+                        Pogledaj sajt <span class="arrow">&#8599;</span>
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag">HTML</span>
+                        <span class="project-tag">CSS</span>
+                        <span class="project-tag">JS</span>
+                        <span class="project-tag">SEO</span>
+                        <span class="project-tag">Web3Forms</span>
+                    </div>
+                </div>
+                <div class="project-card__right">
+                    <div class="browser-mockup">
+                        <div class="browser-bar">
+                            <div class="browser-dot browser-dot--red"></div>
+                            <div class="browser-dot browser-dot--yellow"></div>
+                            <div class="browser-dot browser-dot--green"></div>
+                        </div>
+                        <div class="browser-screen">
+                            <img class="project-img"
+                                 src="screenshot-lexora.jpg"
+                                 alt="Lexora Clean website screenshot"
+                                 data-project="lexora-clean">
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PROJECT 03: VIGO AERIAL -->
+            <article class="project-card"
+                     data-num="03" data-name="Vigo Aerial"
+                     style="--card-accent: #00c8ff;">
+                <div class="project-card__left">
+                    <div class="project-num">03</div>
+                    <div class="project-cat">DRON &middot; VIDEO</div>
+                    <h2 class="project-title">Vigo Aerial</h2>
+                    <p class="project-desc">
+                        Sajt za profesionalno dron snimanje iz Vrnja&ccaron;ke Banje. Plavi no&cacute;ni identitet, animirani dron u hero-u.
+                    </p>
+                    <a class="project-link" href="https://vigoaerial.vercel.app" target="_blank" rel="noopener">
+                        Pogledaj sajt <span class="arrow">&#8599;</span>
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag">HTML</span>
+                        <span class="project-tag">CSS</span>
+                        <span class="project-tag">JS</span>
+                        <span class="project-tag">Three.js</span>
+                    </div>
+                </div>
+                <div class="project-card__right">
+                    <div class="browser-mockup">
+                        <div class="browser-bar">
+                            <div class="browser-dot browser-dot--red"></div>
+                            <div class="browser-dot browser-dot--yellow"></div>
+                            <div class="browser-dot browser-dot--green"></div>
+                        </div>
+                        <div class="browser-screen">
+                            <img class="project-img"
+                                 src="screenshot-vigo.jpg"
+                                 alt="Vigo Aerial website screenshot"
+                                 data-project="vigo-aerial">
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PROJECT 04: MIXMASTER -->
+            <article class="project-card"
+                     data-num="04" data-name="MixMaster"
+                     style="--card-accent: #e8622a;">
+                <div class="project-card__left">
+                    <div class="project-num">04</div>
+                    <div class="project-cat">SaaS &middot; POS</div>
+                    <h2 class="project-title">MixMaster</h2>
+                    <p class="project-desc">
+                        Gamifikovani POS sistem za kafi&cacute;e. Brze porud&382;bine, nivoi, nagrade i analitika u realnom vremenu.
+                    </p>
+                    <a class="project-link" href="https://m-tek.vercel.app" target="_blank" rel="noopener">
+                        Pogledaj sajt <span class="arrow">&#8599;</span>
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag">React</span>
+                        <span class="project-tag">Node.js</span>
+                        <span class="project-tag">Supabase</span>
+                    </div>
+                </div>
+                <div class="project-card__right">
+                    <div class="browser-mockup">
+                        <div class="browser-bar">
+                            <div class="browser-dot browser-dot--red"></div>
+                            <div class="browser-dot browser-dot--yellow"></div>
+                            <div class="browser-dot browser-dot--green"></div>
+                        </div>
+                        <div class="browser-screen">
+                            <img class="project-img"
+                                 src="placeholder-mixmaster.jpg"
+                                 alt="MixMaster POS screenshot"
+                                 data-project="mixmaster">
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PROJECT 05: ZLATAR STARS -->
+            <article class="project-card"
+                     data-num="05" data-name="Zlatar Stars"
+                     style="--card-accent: #8ab4d4;">
+                <div class="project-card__left">
+                    <div class="project-num">05</div>
+                    <div class="project-cat">TURIZAM &middot; REZERVACIJE</div>
+                    <h2 class="project-title">Zlatar Stars</h2>
+                    <p class="project-desc">
+                        Sajt za tri apartmana na Zlataru sa sistemom rezervacija, iCal sinhronizacijom i admin dashboard-om.
+                    </p>
+                    <a class="project-link" href="https://zlatarstars.rs" target="_blank" rel="noopener">
+                        Pogledaj sajt <span class="arrow">&#8599;</span>
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag">Node.js</span>
+                        <span class="project-tag">Express</span>
+                        <span class="project-tag">Supabase</span>
+                        <span class="project-tag">iCal</span>
+                    </div>
+                </div>
+                <div class="project-card__right">
+                    <div class="browser-mockup">
+                        <div class="browser-bar">
+                            <div class="browser-dot browser-dot--red"></div>
+                            <div class="browser-dot browser-dot--yellow"></div>
+                            <div class="browser-dot browser-dot--green"></div>
+                        </div>
+                        <div class="browser-screen">
+                            <img class="project-img"
+                                 src="placeholder-zlatar.jpg"
+                                 alt="Zlatar Stars screenshot"
+                                 data-project="zlatar-stars">
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PROJECT 06: FIZIO -->
+            <article class="project-card"
+                     data-num="06" data-name="Fizio"
+                     style="--card-accent: #4ecdc4;">
+                <div class="project-card__left">
+                    <div class="project-num">06</div>
+                    <div class="project-cat">MEDICINA &middot; TERAPIJA</div>
+                    <h2 class="project-title">Fizio</h2>
+                    <p class="project-desc">
+                        Sajt za fizikalnu terapiju u Kragujevcu. Medicinska estetika, React komponente, animirani stati&scaron;ti&ccaron;ki broja&ccaron;i.
+                    </p>
+                    <a class="project-link" href="https://fizio.vercel.app" target="_blank" rel="noopener">
+                        Pogledaj sajt <span class="arrow">&#8599;</span>
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag">React</span>
+                        <span class="project-tag">Tailwind</span>
+                        <span class="project-tag">Intersection&nbsp;Observer</span>
+                    </div>
+                </div>
+                <div class="project-card__right">
+                    <div class="browser-mockup">
+                        <div class="browser-bar">
+                            <div class="browser-dot browser-dot--red"></div>
+                            <div class="browser-dot browser-dot--yellow"></div>
+                            <div class="browser-dot browser-dot--green"></div>
+                        </div>
+                        <div class="browser-screen">
+                            <img class="project-img"
+                                 src="placeholder-fizio.jpg"
+                                 alt="Fizio website screenshot"
+                                 data-project="fizio">
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PROJECT 07: DEKORACIJA NAJDA & NADA -->
+            <article class="project-card"
+                     data-num="07" data-name="Najda &amp; Nada"
+                     style="--card-accent: #f4a7b9;">
+                <div class="project-card__left">
+                    <div class="project-num">07</div>
+                    <div class="project-cat">EVENTI &middot; DEKORACIJA</div>
+                    <h2 class="project-title">Najda &amp; Nada</h2>
+                    <p class="project-desc">
+                        Premium brend za dekoraciju ven&ccaron;anja i proslava. Pastelni roze identitet, leb&dj;e&cacute;e animacije, masonry galerija.
+                    </p>
+                    <a class="project-link" href="https://najdanada.vercel.app" target="_blank" rel="noopener">
+                        Pogledaj sajt <span class="arrow">&#8599;</span>
+                    </a>
+                    <div class="project-tags">
+                        <span class="project-tag">HTML</span>
+                        <span class="project-tag">CSS</span>
+                        <span class="project-tag">JS</span>
+                        <span class="project-tag">GSAP</span>
+                    </div>
+                </div>
+                <div class="project-card__right">
+                    <div class="browser-mockup">
+                        <div class="browser-bar">
+                            <div class="browser-dot browser-dot--red"></div>
+                            <div class="browser-dot browser-dot--yellow"></div>
+                            <div class="browser-dot browser-dot--green"></div>
+                        </div>
+                        <div class="browser-screen">
+                            <img class="project-img"
+                                 src="placeholder-dekoracija.jpg"
+                                 alt="Najda &amp; Nada website screenshot"
+                                 data-project="najda-nada">
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+        </div><!-- /.projects-track -->
+
+        <!-- Progress indicator: counter + name + fill bar -->
+        <div class="projects-progress" id="projectsProgress">
+            <div class="projects-progress__info">
+                <span class="projects-progress__counter" id="progressCounter">01 / 07</span>
+                <span class="projects-progress__name"    id="progressName">KG Pojasevi</span>
+            </div>
+            <div class="projects-progress__bar">
+                <div class="projects-progress__fill" id="progressFill"></div>
+            </div>
+        </div>
+
+    </section><!-- /#work -->
+
+    <!-- =========================================================
+         PROCESS — vertical scroll, SVG stem grows, petals reveal
+         ========================================================= -->
+    <section class="process" id="process">
+        <div class="process__sticky" id="processSticky">
+
+            <!-- "PROCES &rarr;" watermark passes through during entry -->
+            <div class="process__watermark" id="processWatermark">PROCES &rarr;</div>
+
+            <!-- "03 &middot; PROCES" section label, top-left -->
+            <div class="process__label" id="processLabel">03 &middot; PROCES</div>
+
+            <!-- LEFT — SVG stem with 5 petals + bloom flower -->
+            <div class="process__stem-col">
+
+                <svg class="process__stem-svg" id="stem-svg"
+                     viewBox="0 0 200 800"
+                     preserveAspectRatio="xMidYMid meet"
+                     aria-hidden="true">
+
+                    <!-- Main stem path — slight S-curve, drawn bottom -> top -->
+                    <path id="stem-path"
+                          d="M 100 780 C 95 650 105 550 100 400 C 95 250 105 150 100 20"
+                          stroke="#f5f0e0" stroke-width="2" fill="none"
+                          stroke-linecap="round"/>
+
+                    <!-- Petal 1 — bottom, cream, tilts left -->
+                    <g class="petal" id="petal-1">
+                        <ellipse cx="100" cy="648" rx="14" ry="32" fill="#f5f0e0"/>
+                    </g>
+                    <!-- Petal 2 — pink, tilts right -->
+                    <g class="petal" id="petal-2">
+                        <ellipse cx="100" cy="508" rx="14" ry="32" fill="#e8407a"/>
+                    </g>
+                    <!-- Petal 3 — middle, purple, tilts left -->
+                    <g class="petal" id="petal-3">
+                        <ellipse cx="100" cy="368" rx="14" ry="32" fill="#6b3fa0"/>
+                    </g>
+                    <!-- Petal 4 — orange, tilts right -->
+                    <g class="petal" id="petal-4">
+                        <ellipse cx="100" cy="228" rx="14" ry="32" fill="#e8622a"/>
+                    </g>
+                    <!-- Petal 5 — top, yellow, tilts left -->
+                    <g class="petal" id="petal-5">
+                        <ellipse cx="100" cy="88" rx="14" ry="32" fill="#f5c842"/>
+                    </g>
+                </svg>
+
+                <!-- Bloom flower at top of stem (final moment) -->
+                <div class="process__bloom-wrap" id="bloomWrap">
+                    <img src="logo.png" alt="" class="process__bloom" id="processBloom">
+                </div>
+                <div class="process__bloom-text" id="processBloomText">
+                    Od ideje do &#382;ivog proizvoda.
+                </div>
+            </div>
+
+            <!-- RIGHT — step text (5 steps overlaid via grid 1/1) -->
+            <div class="process__steps-col">
+                <div class="process__steps">
+
+                    <article class="step step-01">
+                        <div class="step__num">01</div>
+                        <h3 class="step__title">Discovery</h3>
+                        <p class="step__desc">
+                            Razgovaramo o va&scaron;em projektu, ciljevima i publici. Analiziramo konkurenciju i defini&scaron;emo strategiju pre nego &scaron;to napi&scaron;emo i liniju koda.
+                        </p>
+                    </article>
+
+                    <article class="step step-02">
+                        <div class="step__num">02</div>
+                        <h3 class="step__title">Dizajn</h3>
+                        <p class="step__desc">
+                            Wireframe, vizuelni identitet, tipografija, boje. Svaki piksel ima razlog. Dizajn koji komunicira pre nego &scaron;to korisnik pro&#269;ita i re&#269;.
+                        </p>
+                    </article>
+
+                    <article class="step step-03">
+                        <div class="step__num">03</div>
+                        <h3 class="step__title">Development</h3>
+                        <p class="step__desc">
+                            &#268;ist kod, brze animacije, pametna arhitektura. Frontend koji di&scaron;e, backend koji ne spava. Sve testirano na pravim ure&#273;ajima.
+                        </p>
+                    </article>
+
+                    <article class="step step-04">
+                        <div class="step__num">04</div>
+                        <h3 class="step__title">Testiranje</h3>
+                        <p class="step__desc">
+                            Brzina, mobilni ure&#273;aji, cross-browser kompatibilnost. Lovimo bugove pre nego &scaron;to ih klijent vidi. Google PageSpeed 90+ je minimum, ne cilj.
+                        </p>
+                    </article>
+
+                    <article class="step step-05">
+                        <div class="step__num">05</div>
+                        <h3 class="step__title">Launch</h3>
+                        <p class="step__desc">
+                            Deploy, DNS, SEO setup, Google Analytics. Pratimo prvih 30 dana nakon lansiranja. Va&scaron; projekat je &#382;iv &mdash; mi smo i dalje tu.
+                        </p>
+                    </article>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =========================================================
+         CONTACT SECTION — conversational form + info
+         ========================================================= -->
+    <section class="contact" id="contact">
+
+        <div class="contact__header">
+            <img src="logo.png" alt="" class="contact__deco-flower" id="contactDecoFlower">
+            <span class="contact__label">04 &middot; KONTAKT</span>
+            <h2 class="contact__title">
+                <em>Imate ideju?</em>
+                <strong>Pri&#269;ajmo.</strong>
+            </h2>
+            <p class="contact__subtitle">Odgovaramo u roku od 24h.</p>
+        </div>
+
+        <div class="contact__body">
+
+            <!-- LEFT — conversational form (60%) -->
+            <div class="contact__form-wrap">
+
+                <div class="contact__progress">
+                    <div class="contact__progress-fill" id="contactProgressFill"></div>
+                </div>
+
+                <!-- CONVERSATIONAL FORM LOGIC -->
+                <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+                    <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY">
+                    <input type="hidden" name="subject" value="Nova poruka &mdash; Flora&middot;Code">
+                    <input type="hidden" name="redirect" value="false">
+
+                    <div class="conv-step active" data-step="1">
+                        <label>Kako se zovete?</label>
+                        <input type="text" name="name" placeholder="Va&scaron;e ime...">
+                        <button class="next-btn" type="button">Nastavi &rarr;</button>
+                    </div>
+
+                    <div class="conv-step" data-step="2">
+                        <label>Va&scaron; email?</label>
+                        <input type="email" name="email" placeholder="email@primer.com">
+                        <button class="next-btn" type="button">Nastavi &rarr;</button>
+                    </div>
+
+                    <div class="conv-step" data-step="3">
+                        <label>&Scaron;ta gradimo zajedno?</label>
+                        <textarea name="message" placeholder="Opi&scaron;ite va&scaron; projekat..." rows="4"></textarea>
+                        <button class="next-btn" type="button">Nastavi &rarr;</button>
+                    </div>
+
+                    <div class="conv-step" data-step="4">
+                        <label>Tip projekta?</label>
+                        <div class="type-pills">
+                            <input type="hidden" name="project_type" id="project-type-input">
+                            <button type="button" class="pill" data-value="Sajt">Sajt</button>
+                            <button type="button" class="pill" data-value="App">App</button>
+                            <button type="button" class="pill" data-value="SEO">SEO</button>
+                            <button type="button" class="pill" data-value="Dizajn">Dizajn</button>
+                            <button type="button" class="pill" data-value="Ostalo">Ostalo</button>
+                        </div>
+                        <button type="submit" class="submit-btn">Po&scaron;aljite poruku &#127800;</button>
+                    </div>
+                </form>
+
+                <div class="contact__success" id="contactSuccess">
+                    <div class="contact__success-text">Uskoro se &#269;ujemo! &#127800;</div>
+                    <div class="contact__success-sub">Odgovaramo u roku od 24h.</div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT — contact info (40%) -->
+            <div class="contact__info">
+                <div class="contact__info-label">Prona&#273;ite nas</div>
+
+                <div class="contact-item">
+                    <span class="contact-item__icon">&#9993;</span>
+                    <div class="contact-item__text">
+                        <span class="contact-item__label">Email</span>
+                        <span class="contact-item__value">
+                            <a href="mailto:hello@floracode.rs">hello@floracode.rs</a>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <span class="contact-item__icon">&#9670;</span>
+                    <div class="contact-item__text">
+                        <span class="contact-item__label">Instagram</span>
+                        <span class="contact-item__value">
+                            <a href="https://instagram.com/floracoders" target="_blank" rel="noopener">@floracoders</a>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <span class="contact-item__icon">&#9673;</span>
+                    <div class="contact-item__text">
+                        <span class="contact-item__label">Lokacija</span>
+                        <span class="contact-item__value">Beograd, Srbija</span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <span class="contact-item__icon">&#9715;</span>
+                    <div class="contact-item__text">
+                        <span class="contact-item__label">Radno vreme</span>
+                        <span class="contact-item__value">Pon &mdash; Pet, 09:00 &mdash; 18:00</span>
+                    </div>
+                </div>
+
+                <img src="logo.png" alt="" class="contact__info-deco">
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <footer class="footer" id="footer">
+        <div class="footer__brand">
+            <span class="footer__brand-name" id="footerBrand">Flora &middot; Code</span>
+            <span class="footer__brand-copy">&copy; 2026 Flora&middot;Code. Sva prava zadr&#382;ana.</span>
+        </div>
+
+        <nav class="footer__nav" aria-label="Footer navigation">
+            <a href="#work">Rad</a>
+            <a href="#services">Usluge</a>
+            <a href="#process">Proces</a>
+            <a href="#contact">Kontakt</a>
+        </nav>
+
+        <div class="footer__right">
+            <span class="footer__made">Made with &#127800; in Belgrade</span>
+            <a href="https://instagram.com/floracoders" target="_blank" rel="noopener"
+               class="footer__ig" aria-label="Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+                </svg>
+            </a>
+        </div>
+    </footer>
+
     <script>
         /* =========================================================
            SETUP
@@ -943,6 +2402,9 @@
 
             initAboutFlowerParallax();
             initScrollExit();
+            initProjectsSection();
+            initProcessSection();
+            initContactReveal();
         }
 
         /* =========================================================
@@ -1220,6 +2682,570 @@
                     stagger: 0.12,
                     onStart: startCountUp,
                 }, '-=0.4');
+        }
+
+        /* =========================================================
+           PROJECTS SECTION — cinematic horizontal scroll
+           Pin + scrub: track x-translates as user scrolls.
+           Progress bar: shows fill + counter + name per card.
+           Cinematic wipe: "RAD →" plays once on first onEnter.
+           Parallax: images move ±30px counter to scroll direction.
+           Mobile bail-out: no pin, no JS animation (CSS handles stack).
+           ========================================================= */
+        function initProjectsSection() {
+
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            if (isMobile) return;
+
+            const section   = document.getElementById('work');
+            const track     = document.getElementById('projectsTrack');
+            const cinematic = document.getElementById('projectsCinematic');
+            const label     = document.getElementById('projectsLabel');
+            const progress  = document.getElementById('projectsProgress');
+            const counter   = document.getElementById('progressCounter');
+            const nameEl    = document.getElementById('progressName');
+            const fill      = document.getElementById('progressFill');
+            const cards     = document.querySelectorAll('.project-card');
+            const TOTAL     = cards.length; // 7
+
+            // Collect per-card data for progress updates
+            const projectData = Array.from(cards).map(c => ({
+                num:    c.dataset.num,
+                name:   c.dataset.name,
+                accent: getComputedStyle(c).getPropertyValue('--card-accent').trim() || '#e8622a',
+            }));
+
+            // ---------------------------------------------------------
+            // INITIAL STATES
+            // ---------------------------------------------------------
+            gsap.set(cinematic, { x: '110vw' });
+            gsap.set(label,     { opacity: 0, y: -10 });
+            gsap.set(progress,  { opacity: 0 });
+
+            // ---------------------------------------------------------
+            // HORIZONTAL SCROLL — pin section, scrub track translation
+            // end: track.scrollWidth gives the full horizontal distance
+            // (700vw), so every pixel of scroll = proportional x move.
+            // ---------------------------------------------------------
+            gsap.to(track, {
+                x: () => -(track.scrollWidth - window.innerWidth),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger:    section,
+                    pin:        true,
+                    scrub:      1,
+                    end:        () => '+=' + track.scrollWidth,
+                    invalidateOnRefresh: true,
+
+                    // ENTRY — cinematic wipe + label + progress appear
+                    onEnter: () => {
+                        gsap.to(cinematic, {
+                            x: '-120vw',
+                            duration: 1.8,
+                            ease: 'power2.inOut',
+                        });
+                        gsap.to(label, {
+                            opacity: 1, y: 0,
+                            duration: 0.6, ease: 'power2.out', delay: 0.2,
+                        });
+                        gsap.to(progress, {
+                            opacity: 1,
+                            duration: 0.5, ease: 'power2.out', delay: 0.4,
+                        });
+                    },
+
+                    onLeaveBack: () => {
+                        gsap.to(progress, { opacity: 0, duration: 0.3 });
+                        gsap.to(label,    { opacity: 0, duration: 0.3 });
+                    },
+                    onEnterBack: () => {
+                        gsap.to(progress, { opacity: 1, duration: 0.4 });
+                        gsap.to(label,    { opacity: 1, duration: 0.4 });
+                    },
+                    onLeave: () => {
+                        gsap.to(progress, { opacity: 0, duration: 0.4 });
+                    },
+
+                    // PROGRESS UPDATE — every scroll frame
+                    onUpdate: (self) => {
+                        const p   = self.progress;
+                        const idx = Math.min(Math.floor(p * TOTAL), TOTAL - 1);
+                        const proj = projectData[idx];
+
+                        // Fill bar width (direct set — no tween lag)
+                        gsap.set(fill, { width: (p * 100) + '%' });
+
+                        // Counter text: "01 / 07" … "07 / 07"
+                        counter.textContent = proj.num + ' / ' + (TOTAL < 10 ? '0' + TOTAL : TOTAL);
+                        nameEl.textContent  = proj.name;
+
+                        // Accent color follows current project
+                        fill.style.background = proj.accent;
+                    },
+                }
+            });
+
+            // ---------------------------------------------------------
+            // IMAGE PARALLAX — images drift counter to scroll direction
+            // Full range: x +30px (at start) → x -30px (at end)
+            // scrub: 2 keeps it lagging slightly behind for depth feel
+            // ---------------------------------------------------------
+            document.querySelectorAll('.project-img').forEach(img => {
+                gsap.fromTo(img,
+                    { x: 30 },
+                    {
+                        x: -30,
+                        ease: 'none',
+                        scrollTrigger: {
+                            trigger: section,
+                            start:   'top top',
+                            end:     () => '+=' + track.scrollWidth,
+                            scrub:   2,
+                            invalidateOnRefresh: true,
+                        },
+                    }
+                );
+            });
+        }
+
+        /* =========================================================
+           PROCESS SECTION — pinned master timeline
+             - Watermark slides through during entry
+             - Stem stroke-dashoffset scrubbed bottom -> top
+             - 5 petals reveal at their stem y-positions
+             - 5 step transitions (active = full opacity, others 0)
+             - Bloom flower at top, then exit upward
+           Mobile (<= 768px): bails out — section becomes a flat list.
+           ========================================================= */
+        function initProcessSection() {
+
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            if (isMobile) return;
+
+            // ---------------------------------------------------------
+            // STEM SETUP — measure path length, prep dash for draw-on
+            // ---------------------------------------------------------
+            const stemPath = document.getElementById('stem-path');
+            const totalLength = stemPath.getTotalLength();
+
+            gsap.set(stemPath, {
+                strokeDasharray:  totalLength,
+                strokeDashoffset: totalLength,
+            });
+
+            // ---------------------------------------------------------
+            // PETAL SETUP — collapse each petal at its anchor on stem.
+            // svgOrigin sets the rotation/scale center in viewBox units.
+            // ---------------------------------------------------------
+            const petals = [
+                { id: '#petal-1', anchor: '100 680', tilt: -28 },
+                { id: '#petal-2', anchor: '100 540', tilt:  28 },
+                { id: '#petal-3', anchor: '100 400', tilt: -28 },
+                { id: '#petal-4', anchor: '100 260', tilt:  28 },
+                { id: '#petal-5', anchor: '100 120', tilt: -28 },
+            ];
+            petals.forEach((p) => {
+                gsap.set(p.id, {
+                    svgOrigin: p.anchor,
+                    scale: 0, rotation: 0, opacity: 0,
+                });
+            });
+
+            // ---------------------------------------------------------
+            // STEP / WATERMARK / LABEL / BLOOM initial states
+            // ---------------------------------------------------------
+            gsap.set('.step',    { opacity: 0, y: 30 });
+            gsap.set('.step-01', { opacity: 1, y: 0  });
+
+            gsap.set('#processWatermark', { x: '110vw' });
+            gsap.set('#processLabel',     { opacity: 0, y: -10 });
+
+            // bloom: keep CSS-applied left/top, but use xPercent/yPercent
+            // for centering — GSAP can then tween scale/rotation/y/opacity
+            // without overriding the centering offset.
+            gsap.set('#bloomWrap',
+                { xPercent: -50, yPercent: -50, scale: 0, rotation: 0, opacity: 0, y: 0 });
+            gsap.set('#processBloomText',
+                { xPercent: -50, opacity: 0, y: 20 });
+
+            // ---------------------------------------------------------
+            // BLOOM FLOAT — independent infinite oscillation on the
+            // inner <img>. Won't collide with the scrub timeline tweens
+            // on the wrap (different element / different transform).
+            // ---------------------------------------------------------
+            gsap.to('#processBloom', {
+                y: -10,
+                duration: 2.4,
+                ease: 'sine.inOut',
+                yoyo: true,
+                repeat: -1,
+            });
+
+            // ---------------------------------------------------------
+            // MASTER TIMELINE — pinned, scrubbed, the whole story
+            // ---------------------------------------------------------
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger:        '#process',
+                    start:          'top top',
+                    end:            'bottom top',
+                    scrub:          1.5,
+                    pin:            '.process__sticky',
+                    anticipatePin:  1,
+                    invalidateOnRefresh: true,
+                }
+            });
+
+            /* ---------------------------------------------------------
+               ENTRY (0.00 -> 0.06)
+               Watermark "PROCES ->" passes from right to left.
+               Label fades in top-left.
+               --------------------------------------------------------- */
+            tl.to('#processWatermark', {
+                x: '-160vw',
+                ease: 'none', duration: 0.06,
+            }, 0);
+
+            tl.to('#processLabel', {
+                opacity: 1, y: 0,
+                ease: 'power2.out', duration: 0.04,
+            }, 0.02);
+
+            /* ---------------------------------------------------------
+               STEM ANIMATION (0.06 -> 0.86)
+               stroke-dashoffset scrubbed from totalLength to 0.
+               --------------------------------------------------------- */
+            tl.to(stemPath, {
+                strokeDashoffset: 0,
+                ease: 'none', duration: 0.80,
+            }, 0.06);
+
+            /* ---------------------------------------------------------
+               STEP TRANSITIONS — only one step active at a time.
+                 step 01 active : 0.06 -> 0.21
+                 step 02 active : 0.21 -> 0.37
+                 step 03 active : 0.37 -> 0.53
+                 step 04 active : 0.53 -> 0.69
+                 step 05 active : 0.69 -> 0.86
+               --------------------------------------------------------- */
+            // STEP 01 -> 02 TRIGGER
+            tl.to('.step-01', {
+                opacity: 0, y: -30,
+                ease: 'power2.in', duration: 0.04,
+            }, 0.18);
+            tl.fromTo('.step-02',
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, ease: 'power2.out', duration: 0.04 },
+                0.21);
+
+            // STEP 02 -> 03 TRIGGER
+            tl.to('.step-02', {
+                opacity: 0, y: -30,
+                ease: 'power2.in', duration: 0.04,
+            }, 0.34);
+            tl.fromTo('.step-03',
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, ease: 'power2.out', duration: 0.04 },
+                0.37);
+
+            // STEP 03 -> 04 TRIGGER
+            tl.to('.step-03', {
+                opacity: 0, y: -30,
+                ease: 'power2.in', duration: 0.04,
+            }, 0.50);
+            tl.fromTo('.step-04',
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, ease: 'power2.out', duration: 0.04 },
+                0.53);
+
+            // STEP 04 -> 05 TRIGGER
+            tl.to('.step-04', {
+                opacity: 0, y: -30,
+                ease: 'power2.in', duration: 0.04,
+            }, 0.66);
+            tl.fromTo('.step-05',
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, ease: 'power2.out', duration: 0.04 },
+                0.69);
+
+            /* ---------------------------------------------------------
+               PETAL REVEALS — fire as stem reaches each anchor y.
+               Stem drawn 0.06 -> 0.86 over y 780 -> 20 (linear-ish).
+               Petal y -> timeline progress mapping:
+                 y=680 -> 0.18,  y=540 -> 0.33,  y=400 -> 0.48,
+                 y=260 -> 0.63,  y=120 -> 0.78
+               --------------------------------------------------------- */
+            const petalTimes = [0.18, 0.33, 0.48, 0.63, 0.78];
+            petals.forEach((p, i) => {
+                tl.to(p.id, {
+                    scale: 1, rotation: p.tilt, opacity: 1,
+                    ease: 'back.out(1.6)', duration: 0.05,
+                }, petalTimes[i]);
+            });
+
+            /* ---------------------------------------------------------
+               BLOOM (0.86 -> 0.93) — flower appears at top of stem
+               with slight overshoot (1.1 -> 1.0) and rotation 0->10->0.
+               Bloom text fades in just after.
+               --------------------------------------------------------- */
+            tl.to('#bloomWrap', {
+                scale: 1.1, rotation: 10, opacity: 1,
+                ease: 'power3.out', duration: 0.04,
+            }, 0.86);
+            tl.to('#bloomWrap', {
+                scale: 1.0, rotation: 0,
+                ease: 'power2.inOut', duration: 0.03,
+            }, 0.90);
+            tl.to('#processBloomText', {
+                opacity: 1, y: 0,
+                ease: 'power2.out', duration: 0.04,
+            }, 0.90);
+
+            /* ---------------------------------------------------------
+               EXIT (0.93 -> 1.00) — bloom flies up, stem & step fade,
+               clears the stage so contact section can take over.
+               --------------------------------------------------------- */
+            tl.to('#bloomWrap', {
+                y: '-30vh', scale: 0.3,
+                ease: 'power2.in', duration: 0.07,
+            }, 0.93);
+
+            tl.to('#processBloomText', {
+                opacity: 0,
+                ease: 'none', duration: 0.04,
+            }, 0.93);
+
+            tl.to('#stem-svg', {
+                opacity: 0,
+                ease: 'none', duration: 0.05,
+            }, 0.94);
+
+            tl.to('.step-05', {
+                opacity: 0,
+                ease: 'none', duration: 0.04,
+            }, 0.93);
+
+            tl.to('#processLabel', {
+                opacity: 0,
+                ease: 'none', duration: 0.04,
+            }, 0.94);
+        }
+
+        /* =========================================================
+           CONTACT SECTION — reveal + flower float + footer hook
+           ========================================================= */
+        function initContactReveal() {
+            gsap.fromTo('#contact',
+                { opacity: 0, y: 60 },
+                {
+                    opacity: 1, y: 0,
+                    ease: 'power2.out',
+                    scrollTrigger: {
+                        trigger: '#contact',
+                        start:   'top 90%',
+                        end:     'top 40%',
+                        scrub:   1,
+                    }
+                }
+            );
+
+            // Decorative flower float — same rhythm as hero
+            gsap.to('#contactDecoFlower', {
+                y: -12,
+                duration: 2.8,
+                ease: 'sine.inOut',
+                yoyo: true,
+                repeat: -1,
+            });
+
+            // CONVERSATIONAL FORM LOGIC
+            initConversationalForm();
+
+            // Footer brand → spins navbar flower
+            const footerBrand = document.getElementById('footerBrand');
+            if (footerBrand) {
+                footerBrand.addEventListener('mouseenter', () => {
+                    gsap.to('#navFlower', {
+                        rotation: '+=12',
+                        duration: 0.5,
+                        ease: 'power2.out',
+                    });
+                });
+            }
+
+            ScrollTrigger.refresh();
+        }
+
+        /* =========================================================
+           CONVERSATIONAL FORM LOGIC
+           ========================================================= */
+        function initConversationalForm() {
+            const form             = document.getElementById('contact-form');
+            const progressFill     = document.getElementById('contactProgressFill');
+            const nextBtns         = document.querySelectorAll('.next-btn');
+            const pills            = document.querySelectorAll('.pill');
+            const projectTypeInput = document.getElementById('project-type-input');
+            const successEl        = document.getElementById('contactSuccess');
+            const decoFlower       = document.getElementById('contactDecoFlower');
+
+            if (!form) return;
+
+            let currentStep  = 1;
+            const totalSteps = 4;
+
+            function updateProgress(step) {
+                if (progressFill) progressFill.style.width = (step / totalSteps * 100) + '%';
+            }
+            updateProgress(1);
+
+            function goToStep(nextNum) {
+                const current = form.querySelector('.conv-step[data-step="' + currentStep + '"]');
+                const next    = form.querySelector('.conv-step[data-step="' + nextNum    + '"]');
+                if (!current || !next) return;
+
+                gsap.to(current, {
+                    opacity: 0, y: -20,
+                    duration: 0.35, ease: 'power2.in',
+                    onComplete: () => {
+                        current.classList.remove('active');
+                        next.classList.add('active');
+                        gsap.fromTo(next,
+                            { opacity: 0, y: 20 },
+                            { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
+                        );
+                        const inp = next.querySelector('input[type="text"], input[type="email"], textarea');
+                        if (inp) setTimeout(() => inp.focus(), 60);
+                    }
+                });
+
+                currentStep = nextNum;
+                updateProgress(nextNum);
+            }
+
+            function validateStep(stepNum) {
+                const step = form.querySelector('.conv-step[data-step="' + stepNum + '"]');
+                if (!step) return true;
+                const inp = step.querySelector('input[type="text"], input[type="email"], textarea');
+                if (!inp || inp.value.trim()) return true;
+                inp.classList.remove('input-shake');
+                void inp.offsetWidth;
+                inp.classList.add('input-shake');
+                inp.addEventListener('animationend', () => inp.classList.remove('input-shake'), { once: true });
+                inp.focus();
+                return false;
+            }
+
+            nextBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const step    = btn.closest('.conv-step');
+                    const stepNum = parseInt(step.dataset.step);
+                    if (!validateStep(stepNum)) return;
+                    if (stepNum < totalSteps) goToStep(stepNum + 1);
+                });
+            });
+
+            // Enter key advances text inputs
+            document.querySelectorAll('.conv-step input[type="text"], .conv-step input[type="email"]').forEach(inp => {
+                inp.addEventListener('keydown', (e) => {
+                    if (e.key !== 'Enter') return;
+                    e.preventDefault();
+                    const btn = inp.closest('.conv-step').querySelector('.next-btn');
+                    if (btn) btn.click();
+                });
+            });
+
+            // Pill selection
+            pills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    pills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    if (projectTypeInput) projectTypeInput.value = pill.dataset.value;
+                });
+            });
+
+            // SUBMIT ANIMATION
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const submitBtn = form.querySelector('.submit-btn');
+                if (submitBtn) { submitBtn.textContent = 'Šalje se...'; submitBtn.disabled = true; }
+
+                try {
+                    const res  = await fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        body:   new FormData(form),
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        gsap.to(form, {
+                            opacity: 0, y: -20, duration: 0.5, ease: 'power2.in',
+                            onComplete: () => {
+                                form.style.display = 'none';
+                                successEl.style.display = 'block';
+                                gsap.fromTo(successEl,
+                                    { opacity: 0, y: 20 },
+                                    { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+                                );
+                            }
+                        });
+                        triggerFlowerExplosion(decoFlower);
+                    } else {
+                        if (submitBtn) {
+                            submitBtn.textContent = 'Pošaljite poruku 🌸';
+                            submitBtn.disabled = false;
+                            void submitBtn.offsetWidth;
+                            submitBtn.classList.add('shake');
+                            submitBtn.addEventListener('animationend', () => submitBtn.classList.remove('shake'), { once: true });
+                        }
+                    }
+                } catch (_) {
+                    if (submitBtn) {
+                        submitBtn.textContent = 'Nešto je pošlo naopako. Pokušajte ponovo.';
+                        submitBtn.style.background = '#c0392b';
+                        submitBtn.disabled = false;
+                    }
+                }
+            });
+        }
+
+        /* =========================================================
+           SUBMIT ANIMATION — 12 flower particles explode on success
+           ========================================================= */
+        function triggerFlowerExplosion(sourceEl) {
+            if (!sourceEl) return;
+            const rect = sourceEl.getBoundingClientRect();
+            const cx   = rect.left + rect.width  / 2;
+            const cy   = rect.top  + rect.height / 2;
+
+            gsap.to(sourceEl, {
+                scale: 1.5, duration: 0.25, ease: 'power2.out',
+                onComplete: () => gsap.to(sourceEl, { scale: 0, duration: 0.2, ease: 'power2.in' }),
+            });
+
+            for (let i = 0; i < 12; i++) {
+                const particle     = document.createElement('img');
+                particle.src       = 'logo.png';
+                particle.className = 'flower-particle';
+                particle.style.left = (cx - 20) + 'px';
+                particle.style.top  = (cy - 20) + 'px';
+                document.body.appendChild(particle);
+
+                const angle = (i / 12) * Math.PI * 2;
+                const dist  = 80 + Math.random() * 120;
+
+                gsap.fromTo(particle,
+                    { opacity: 1, scale: 0.2 + Math.random() * 0.4, x: 0, y: 0, rotation: 0 },
+                    {
+                        opacity:  0, scale: 0,
+                        x: Math.cos(angle) * dist,
+                        y: Math.sin(angle) * dist,
+                        rotation: (Math.random() - 0.5) * 360,
+                        duration: 0.8 + Math.random() * 0.4,
+                        ease:     'power2.out',
+                        onComplete: () => particle.remove(),
+                    }
+                );
+            }
         }
     </script>
 </body>
