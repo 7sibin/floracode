@@ -43,7 +43,7 @@
            ========================================================= */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html { scroll-behavior: auto; overflow-x: hidden; }
+        html { scroll-behavior: auto; }
 
         body {
             background-color: var(--bg);
@@ -910,17 +910,22 @@
                 margin-bottom: 36px;
                 display: block;
             }
+            /* Force-override any GSAP horizontal translate that may have
+               been applied before the mobile bail-out check fired. */
             .projects-track {
                 flex-direction: column;
                 height: auto;
                 gap: 60px;
+                width: 100% !important;
+                transform: none !important;
             }
             .project-card {
-                width: 100%;
+                width: 100% !important;
                 height: auto;
                 grid-template-columns: 1fr;
                 padding: 0;
                 gap: 28px;
+                transform: none !important;
             }
             .project-card::after     { display: none; }
             .project-card__left      { padding-right: 0; }
@@ -1452,15 +1457,25 @@
 
         /* PROCESS — Mobile fallback (no pin, no SVG, simple list) */
         @media (max-width: 768px) {
+            /* Mobile-only: kill horizontal scrollbar without breaking
+               GSAP pin (which uses position:fixed) on desktop. */
+            html { overflow-x: hidden; }
+
             .process {
-                min-height: 0;
-                height: auto;
+                min-height: 0 !important;
+                height: auto !important;
                 padding: 80px 24px;
             }
+            /* Force-override any GSAP pin (position:fixed + transforms) —
+               on phones where matchMedia('max-width:768px') somehow misses
+               and initProcessSection still runs. */
             .process__sticky {
-                position: relative;
-                top: auto;
-                height: auto;
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                width: 100% !important;
+                height: auto !important;
+                transform: none !important;
                 grid-template-columns: 1fr;
                 padding: 0;
                 overflow: visible;
@@ -1632,7 +1647,6 @@
 
             <div class="about__right" id="aboutRight">
                 <div class="about__flower-parallax" id="aboutFlowerParallax">
-                    <img src="logo.png" alt="" class="about__flower" id="aboutFlower">
                 </div>
             </div>
         </section>
@@ -2694,7 +2708,9 @@
            ========================================================= */
         function initProjectsSection() {
 
-            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            const isMobile = window.matchMedia('(max-width: 768px)').matches
+                          || window.innerWidth <= 768
+                          || ('ontouchstart' in window && window.innerWidth <= 1024);
             if (isMobile) return;
 
             const section   = document.getElementById('work');
@@ -2819,7 +2835,11 @@
            ========================================================= */
         function initProcessSection() {
 
-            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            // Belt-and-suspenders mobile check — matchMedia alone can lie
+            // when the address bar collapses on iOS / Android browsers.
+            const isMobile = window.matchMedia('(max-width: 768px)').matches
+                          || window.innerWidth <= 768
+                          || ('ontouchstart' in window && window.innerWidth <= 1024);
             if (isMobile) return;
 
             // ---------------------------------------------------------
